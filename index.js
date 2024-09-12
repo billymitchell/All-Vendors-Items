@@ -1,8 +1,9 @@
+import fetch from 'node-fetch';
+import express from 'express';
+import bodyParser from "body-parser"
 
 let store = "fbla"
-const express = require('express');
-const bodyParser = require('body-parser');
-const fetch = require('node-fetch'); // Import node-fetch to make HTTP requests
+
 
 const app = express();
 
