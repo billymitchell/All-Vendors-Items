@@ -4,6 +4,16 @@ import bodyParser from "body-parser"
 
 let store = "fbla"
 
+let store_key = [
+    {
+        store_id: "1234",
+        store_subdomain: "fbla"
+    },
+    {
+        store_id: "234",
+        store_subdomain: "other"
+    }
+]
 
 const app = express();
 
@@ -14,21 +24,26 @@ app.use(bodyParser.json());
 app.post('/submit', async (req, res) => {
     const jsonData = req.body;
 
-    // Log the received data
-    console.log('Received data:', jsonData);
-
     try {
-        // Send the received data to another API
-        const apiResponse = await fetch(`https://${store}.mybrightsites.com/api/v2.6.1/orders/1?token=GXzAxWkkyYLsESGQTU15`, {
+        const apiResponse = await fetch('https://example-api.com/endpoint', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(jsonData), // Forward the received data as JSON
+            body: JSON.stringify(jsonData),
         });
 
-        // Handle the response from the API
-        const apiResult = await apiResponse.json();
+        // Check if the response body is non-empty before trying to parse it
+        const text = await apiResponse.text(); // Get raw text response
+
+        // Try to parse the response as JSON only if it contains data
+        let apiResult;
+        try {
+            apiResult = text ? JSON.parse(text) : {};
+        } catch (err) {
+            console.warn('Failed to parse JSON, returning raw text instead.');
+            apiResult = { rawResponse: text };
+        }
 
         // Send the result from the API back to the original client
         res.status(200).json({
@@ -37,9 +52,11 @@ app.post('/submit', async (req, res) => {
         });
     } catch (error) {
         console.error('Error forwarding data:', error);
-        res.status(500).json({ message: 'Error forwarding data' });
+        res.status(500).json({ message: 'Error forwarding data', error: error.message });
     }
 });
+
+
 
 const port = process.env.PORT || 3000;
 
