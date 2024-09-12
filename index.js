@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 const fetch = require('node-fetch'); // Import node-fetch to make HTTP requests
 
 const app = express();
-const port = 3000;
 
 // Middleware to parse JSON data
 app.use(bodyParser.json());
